@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Love</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #ffd6e7;
+            font-family: 'Press Start 2P', cursive;
+            color: #8b0000;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Enhanced Cloud Animations */
+        .cloud {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            filter: blur(12px);
+            z-index: 0;
+            opacity: 0;
+            animation: 
+                cloudFadeIn 2s forwards,
+                cloudMove 60s linear infinite;
+            transform: translateY(0);
+        }
+
+        @keyframes cloudFadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 0.8; transform: translateY(0); }
+        }
+
+        @keyframes cloudMove {
+            0% { transform: translateX(-150px); }
+            100% { transform: translateX(calc(100vw + 150px)); }
+        }
+
+        .cloud:before, .cloud:after {
+            content: '';
+            position: absolute;
+            background-color: inherit;
+            border-radius: inherit;
+            filter: blur(5px);
+        }
+
+        /* Sparkle Animations */
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: white;
+            border-radius: 50%;
+            animation: 
+                twinkle 2s infinite alternate, 
+                sparkleMove 15s linear infinite;
+            z-index: 0;
+            opacity: 0;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        @keyframes sparkleMove {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(10px, -15px); }
+            50% { transform: translate(5px, -25px); }
+            75% { transform: translate(-5px, -15px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        /* Heart Animations */
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            color: #ff3366;
+            animation: 
+                heartAppear 1s forwards,
+                float 6s infinite ease-in-out;
+            z-index: 0;
+            opacity: 0;
+        }
+
+        @keyframes heartAppear {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 0.7; transform: scale(1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-15px) rotate(5deg); }
+            50% { transform: translateY(-30px) rotate(0deg); }
+            75% { transform: translateY(-15px) rotate(-5deg); }
+        }
+
+        /* Envelope Styles */
+        #envelope-container {
+            position: relative;
+            width: 320px;
+            height: 220px;
+            perspective: 1000px;
+        }
+
+        #envelope {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #ff3366;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #cc0033, 0 15px 20px rgba(0,0,0,0.2);
+            transition: all 0.5s ease;
+            z-index: 1;
+            transform-style: preserve-3d;
+        }
+
+        #envelope:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-top: 110px solid #ff6699;
+            transform-origin: top;
+            transition: all 0.8s ease;
+            z-index: 3;
+            box-shadow: 0 -5px 10px rgba(0,0,0,0.1);
+        }
+
+        #envelope.open {
+            height: 20px;
+            box-shadow: 0 8px 0 #cc0033, 0 5px 5px rgba(0,0,0,0.1);
+        }
+
+        #envelope.open:before {
+            transform: rotateX(180deg) translateY(-30px);
+            border-top-color: #ff99bb;
+        }
+
+        #envelope-initials {
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 40px;
+            color: white;
+            text-shadow: 3px 3px 0 #cc0033;
+            z-index: 2;
+            transition: opacity 0.3s ease;
+        }
+
+        #envelope.open #envelope-initials {
+            opacity: 0;
+        }
+
+        #envelope.disappear {
+            animation: envelopeDisappear 1s forwards;
+        }
+
+        @keyframes envelopeDisappear {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        /* Letter Styles */
+        #letter {
+            position: absolute;
+            width: 300px;
+            height: 200px;
+            background: linear-gradient(to bottom, #fff0f5, #ffe6ee);
+            margin: 10px;
+            transition: all 0.8s ease 0.5s;
+            opacity: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
+            font-size: 12px;
+            line-height: 1.6;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed #ff99bb;
+            box-shadow: inset 0 0 10px rgba(255, 102, 153, 0.3);
+            z-index: 0;
+        }
+
+        #letter.visible {
+            opacity: 1;
+            transform: translateY(-180px);
+            height: auto;
+            min-height: 200px;
+            max-height: 500px;
+            animation: letterGlow 2s infinite alternate;
+            z-index: 2;
+        }
+
+        @keyframes letterGlow {
+            0% { box-shadow: inset 0 0 10px rgba(255, 102, 153, 0.3), 0 0 10px rgba(255, 102, 153, 0.3); }
+            100% { box-shadow: inset 0 0 15px rgba(255, 102, 153, 0.5), 0 0 20px rgba(255, 102, 153, 0.5); }
+        }
+
+        /* Timer Styles */
+        #timer {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 15px 0;
+            color: #ff0066;
+            text-shadow: 2px 2px 0px #fff;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            border: 2px solid #ff99bb;
+            z-index: 3;
+            position: relative;
+        }
+
+        .message {
+            position: absolute;
+            background-color: #fff0f5;
+            border: 3px solid #8b0000;
+            padding: 12px;
+            font-size: 14px;
+            max-width: 180px;
+            text-align: center;
+            box-shadow: 5px 5px 0px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: all 0.8s ease;
+            z-index: 8;
+            border-radius: 5px;
+            animation: messageFloat 4s infinite ease-in-out;
+            pointer-events: none; /* Prevent messages from blocking clicks */
+        }
+
+        @keyframes messageFloat {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-5px) rotate(2deg); }
+        }
+
+        /* Button Styles */
+        #forever-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #ff0066;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px #8b0000;
+            transition: all 0.2s;
+            text-shadow: 1px 1px 0px #8b0000;
+            z-index: 15;
+            position: relative;
+        }
+
+        #forever-btn:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #8b0000;
+            background-color: #ff3385;
+        }
+
+        #replay-btn {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #8b0000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px #ff0066;
+            transition: all 0.2s;
+            text-shadow: 1px 1px 0px #ff0066;
+            z-index: 15;
+            position: relative;
+        }
+
+        #replay-btn:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #ff0066;
+            background-color: #a30000;
+        }
+
+        /* Text Styles */
+        h2 {
+            color: #ff0066;
+            text-shadow: 2px 2px 0px #fff;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .pixel-heart {
+            font-size: 16px;
+            margin: 0 3px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        /* Prompt Styles */
+        #prompt {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff0f5;
+            padding: 30px;
+            border-radius: 10px;
+            border: 3px solid #ff0066;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            z-index: 100;
+            text-align: center;
+            max-width: 80%;
+        }
+
+        #prompt h3 {
+            color: #ff0066;
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        #prompt-btn {
+            padding: 10px 20px;
+            background-color: #ff0066;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px #8b0000;
+            transition: all 0.2s;
+        }
+
+        #prompt-btn:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #8b0000;
+        }
+    </style>
+</head>
+<body>
+    <div id="prompt">
+        <h3>WANT TO SEE HOW MUCH TIME<br>WE'VE SPENT TOGETHER?</h3>
+        <button id="prompt-btn">YES, SHOW ME!</button>
+    </div>
+
+    <div id="envelope-container">
+        <div id="envelope">
+            <div id="envelope-initials">A+Z</div>
+        </div>
+        <div id="letter">
+            <h2>HI ZOYA, LOOK</h2>
+            <div id="timer">Loading our time together...</div>
+            <p>Every second with you is a gift ♥</p>
+            <button id="forever-btn">FOREVER TO GO</button>
+            <button id="replay-btn">REPLAY LOVE</button>
+        </div>
+    </div>
+
+    <script>
+        // Set your exact relationship start date and time
+        const startDate = new Date(2023, 3, 2, 23, 45, 0); // April 3, 2023 11:45 PM
+        
+        const envelope = document.getElementById('envelope');
+        const letter = document.getElementById('letter');
+        const timer = document.getElementById('timer');
+        const foreverBtn = document.getElementById('forever-btn');
+        const replayBtn = document.getElementById('replay-btn');
+        const prompt = document.getElementById('prompt');
+        const promptBtn = document.getElementById('prompt-btn');
+        
+        let messages = [
+            "You're my favorite person <span class='pixel-heart'>♥</span>",
+            "I love you more each day!",
+            "You make my heart skip a beat",
+            "Forever isn't long enough",
+            "My happy place is with you",
+            "You're my dream come true",
+            "I fall for you constantly",
+            "You're my perfect match",
+            "My heart belongs to you",
+            "You're my everything",
+            "I'm crazy about you",
+            "You complete me",
+            "My love for you is endless",
+            "You're my bestest friend",
+            "Ur so cool",
+            "We should kiss",
+            "I MISSS YOUUUUUU"
+        ];
+        
+        let messageElements = [];
+        
+        // Enhanced cloud creation with better animations
+        function createBackground() {
+            // Create multi-layer clouds with different properties
+            for (let i = 0; i < 12; i++) {
+                const cloud = document.createElement('div');
+                cloud.className = 'cloud';
+                
+                // Random cloud properties
+                const size = Math.random() * 120 + 60;
+                const opacity = Math.random() * 0.6 + 0.2;
+                const blur = Math.random() * 8 + 8;
+                const duration = Math.random() * 60 + 60;
+                const delay = Math.random() * 20;
+                const yPos = Math.random() * 100;
+                
+                cloud.style.width = `${size}px`;
+                cloud.style.height = `${size/2}px`;
+                cloud.style.left = `${Math.random() * -300 - 150}px`;
+                cloud.style.top = `${yPos}%`;
+                cloud.style.opacity = '0';
+                cloud.style.filter = `blur(${blur}px)`;
+                cloud.style.animationDuration = `${duration}s`;
+                cloud.style.animationDelay = `${delay}s`;
+                
+                // Create cloud fluff
+                cloud.innerHTML = `
+                    <style>
+                        .cloud:nth-child(${i+1})::before {
+                            content: '';
+                            position: absolute;
+                            width: ${size*0.6}px;
+                            height: ${size*0.6}px;
+                            background: inherit;
+                            border-radius: inherit;
+                            filter: blur(${blur*0.7}px);
+                            top: ${-size*0.2}px;
+                            left: ${size*0.1}px;
+                        }
+                        .cloud:nth-child(${i+1})::after {
+                            content: '';
+                            position: absolute;
+                            width: ${size*0.4}px;
+                            height: ${size*0.4}px;
+                            background: inherit;
+                            border-radius: inherit;
+                            filter: blur(${blur*0.7}px);
+                            top: ${-size*0.1}px;
+                            right: ${size*0.1}px;
+                        }
+                    </style>
+                `;
+                
+                document.body.appendChild(cloud);
+            }
+            
+            // Create sparkles with staggered appearance
+            for (let i = 0; i < 50; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                
+                sparkle.style.left = `${Math.random() * 100}%`;
+                sparkle.style.top = `${Math.random() * 100}%`;
+                sparkle.style.animationDelay = `${Math.random() * 5}s`;
+                sparkle.style.animationDuration = `${Math.random() * 10 + 10}s`;
+                sparkle.style.opacity = '0';
+                
+                setTimeout(() => {
+                    sparkle.style.opacity = '1';
+                }, Math.random() * 2000);
+                
+                document.body.appendChild(sparkle);
+            }
+            
+            // Create floating hearts with smooth entrance
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '♥';
+                
+                heart.style.left = `${Math.random() * 100}%`;
+                heart.style.top = `${Math.random() * 100}%`;
+                heart.style.animationDelay = `${Math.random() * 6}s`;
+                heart.style.fontSize = `${Math.random() * 10 + 15}px`;
+                heart.style.opacity = '0';
+                
+                setTimeout(() => {
+                    heart.style.opacity = '0.7';
+                }, Math.random() * 3000);
+                
+                document.body.appendChild(heart);
+            }
+        }
+        
+        promptBtn.addEventListener('click', () => {
+            prompt.style.display = 'none';
+            createBackground();
+            document.getElementById('envelope-container').style.display = 'block';
+        });
+        
+        envelope.addEventListener('click', openEnvelope);
+        foreverBtn.addEventListener('click', showFinalMessage);
+        replayBtn.addEventListener('click', resetExperience);
+        
+        function openEnvelope() {
+            envelope.classList.add('open');
+            setTimeout(() => {
+                letter.classList.add('visible');
+                startTimer();
+                showMessages();
+                // Make only the envelope disappear after it opens
+                setTimeout(() => {
+                    envelope.classList.add('disappear');
+                }, 1000);
+            }, 500);
+            
+            envelope.removeEventListener('click', openEnvelope);
+        }
+        
+        function startTimer() {
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        }
+        
+        function updateTimer() {
+            const now = new Date();
+            const diff = now - startDate;
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            timer.innerHTML = `
+                <div>${days} DAYS</div>
+                <div>${hours} HOURS</div>
+                <div>${minutes} MINUTES</div>
+                <div>${seconds} SECONDS</div>
+                <div>TOGETHER</div>
+            `;
+        }
+        
+        function showMessages() {
+            // Create message elements with better positioning
+            for (let i = 0; i < messages.length; i++) {
+                const msg = document.createElement('div');
+                msg.className = 'message';
+                msg.innerHTML = messages[i];
+                
+                // Position messages carefully to avoid timer overlap
+                let left, top;
+                if (i % 4 === 0) {
+                    // Top-left
+                    left = Math.random() * 20 + 5;
+                    top = Math.random() * 20 + 5;
+                } else if (i % 4 === 1) {
+                    // Top-right
+                    left = Math.random() * 20 + 75;
+                    top = Math.random() * 20 + 5;
+                } else if (i % 4 === 2) {
+                    // Bottom-left
+                    left = Math.random() * 20 + 5;
+                    top = Math.random() * 20 + 75;
+                } else {
+                    // Bottom-right
+                    left = Math.random() * 20 + 75;
+                    top = Math.random() * 20 + 75;
+                }
+                
+                msg.style.left = `${left}%`;
+                msg.style.top = `${top}%`;
+                msg.style.animationDelay = `${i * 0.3}s`;
+                
+                document.body.appendChild(msg);
+                messageElements.push(msg);
+                
+                // Show messages with delay
+                setTimeout(() => {
+                    msg.style.opacity = '1';
+                }, 800 + (i * 1200));
+            }
+        }
+        
+        function showFinalMessage() {
+            // Hide all messages
+            messageElements.forEach(msg => {
+                msg.style.opacity = '0';
+            });
+            
+            // Create final message
+            const finalMsg = document.createElement('div');
+            finalMsg.className = 'message';
+            finalMsg.innerHTML = "I'LL LOVE YOU<br><span class='pixel-heart'>♥</span> FOR ETERNITY <span class='pixel-heart'>♥</span>";
+            finalMsg.style.position = 'fixed';
+            finalMsg.style.left = '50%';
+            finalMsg.style.top = '50%';
+            finalMsg.style.transform = 'translate(-50%, -50%)';
+            finalMsg.style.opacity = '0';
+            finalMsg.style.fontSize = '18px';
+            finalMsg.style.zIndex = '20';
+            finalMsg.style.padding = '20px';
+            finalMsg.style.maxWidth = 'none';
+            document.body.appendChild(finalMsg);
+            
+            setTimeout(() => {
+                finalMsg.style.opacity = '1';
+                foreverBtn.style.display = 'none';
+                replayBtn.style.display = 'block';
+            }, 500);
+        }
+        
+        function resetExperience() {
+            // Remove all messages
+            document.querySelectorAll('.message').forEach(msg => msg.remove());
+            messageElements = [];
+            
+            // Reset envelope and letter
+            envelope.classList.remove('open', 'disappear');
+            envelope.style.opacity = '1';
+            envelope.style.transform = 'scale(1)';
+            letter.classList.remove('visible');
+            foreverBtn.style.display = 'block';
+            replayBtn.style.display = 'none';
+            
+            // Re-enable click
+            setTimeout(() => {
+                envelope.addEventListener('click', openEnvelope);
+            }, 1000);
+        }
+        
+        // Hide envelope initially
+        document.getElementById('envelope-container').style.display = 'none';
+        function showMessages() {
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            const letterRect = document.getElementById('letter').getBoundingClientRect();
+            const safeZone = 100; // Minimum distance from letter
+            
+            // Define grid positions for messages
+            const gridPositions = [
+                // Top-left quadrant
+                { left: 5, top: 5 },
+                { left: 15, top: 20 },
+                { left: 25, top: 10 },
+                
+                // Top-right quadrant
+                { left: 75, top: 5 },
+                { left: 85, top: 20 },
+                { left: 65, top: 15 },
+                
+                // Bottom-left quadrant
+                { left: 5, top: 75 },
+                { left: 15, top: 85 },
+                { left: 25, top: 65 },
+                
+                // Bottom-right quadrant
+                { left: 75, top: 75 },
+                { left: 85, top: 85 },
+                { left: 65, top: 65 }
+            ];
+
+            // Create message elements with perfect positioning
+            for (let i = 0; i < Math.min(messages.length, gridPositions.length); i++) {
+                const msg = document.createElement('div');
+                msg.className = 'message';
+                msg.innerHTML = messages[i];
+                
+                // Get pre-defined position
+                const pos = gridPositions[i];
+                
+                // Convert percentages to pixels
+                const leftPos = (pos.left / 100) * screenWidth;
+                const topPos = (pos.top / 100) * screenHeight;
+                
+                // Ensure messages don't overlap with letter
+                const isOverlapping =
+                    leftPos < letterRect.right + safeZone &&
+                    leftPos + 180 > letterRect.left - safeZone &&
+                    topPos < letterRect.bottom + safeZone &&
+                    topPos + 100 > letterRect.top - safeZone;
+                
+                if (!isOverlapping) {
+                    msg.style.left = `${pos.left}%`;
+                    msg.style.top = `${pos.top}%`;
+                } else {
+                    // If overlapping, adjust position
+                    msg.style.left = `${pos.left < 50 ? 5 : 85}%`;
+                    msg.style.top = `${pos.top < 50 ? 5 : 85}%`;
+                }
+                
+                msg.style.animationDelay = `${i * 0.3}s`;
+                document.body.appendChild(msg);
+                messageElements.push(msg);
+                
+                // Show messages with delay
+                setTimeout(() => {
+                    msg.style.opacity = '1';
+                }, 800 + (i * 1200));
+            }
+        }
+    </script>
+</body>
+</html>
